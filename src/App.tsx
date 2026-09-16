@@ -5,14 +5,25 @@ import { translations } from "./translations";
 import Home from "./components/Home";
 import PartnerForm from "./components/PartnerForm";
 import ApplyForm from "./components/ApplyForm";
-import { Briefcase, Menu, X, Landmark, ClipboardCheck, ArrowUpCircle } from "lucide-react";
-import logo from "@/assets/logo.png";
+import SeasonalLogoModal from "./components/SeasonalLogoModal";
+import { useSeasonalLogo } from "./utils/seasonalLogo";
+import { Briefcase, Menu, X, Landmark, ClipboardCheck, ArrowUpCircle, Sparkles } from "lucide-react";
 
 export default function App() {
   const [language, setLanguage] = useState<Language>("en");
   const [page, setPage] = useState<"home" | "partner" | "apply">("home");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showBackToTop, setShowBackToTop] = useState(false);
+  const [seasonalModalOpen, setSeasonalModalOpen] = useState(false);
+
+  const {
+    logoSrc,
+    seasonName,
+    seasonId,
+    isSeasonal,
+    override,
+    setManualOverride,
+  } = useSeasonalLogo();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -61,7 +72,7 @@ export default function App() {
               onClick={() => { setPage("home"); window.scrollTo({ top: 0, behavior: "smooth" }); }}
               className="flex items-center gap-2.5 group text-left cursor-pointer"
             >
-              <img src={logo} alt="TK Agency logo" className="size-9 object-contain" />
+              <img src={logoSrc} alt="TK Agency logo" className="size-9 object-contain" />
               <span 
                 className="font-display text-xl font-bold tracking-tight bg-gradient-to-r from-[#012756] to-[#063160] bg-clip-text text-transparent inline-block"
                 style={{
@@ -188,6 +199,7 @@ export default function App() {
                 language={language} 
                 onNavigate={handleNavigate} 
                 onLanguageChange={setLanguage}
+                logoSrc={logoSrc}
               />
             </motion.div>
           )}
@@ -203,6 +215,7 @@ export default function App() {
                 language={language} 
                 onNavigate={handleNavigate} 
                 onLanguageChange={setLanguage}
+                logoSrc={logoSrc}
               />
             </motion.div>
           )}
@@ -216,7 +229,7 @@ export default function App() {
             
             <div className="lg:col-span-2 space-y-6">
               <div className="flex items-center gap-2.5">
-                <img src={logo} alt="TK Agency logo" className="h-8 object-contain" />
+                <img src={logoSrc} alt="TK Agency logo" className="h-8 object-contain" />
                 <span 
                   className="font-display text-lg font-bold tracking-tight bg-gradient-to-r from-[#012756] to-[#063160] bg-clip-text text-transparent inline-block"
                   style={{
@@ -259,10 +272,18 @@ export default function App() {
 
           <div className="mt-20 flex flex-col items-center justify-between gap-6 border-t border-brand-border pt-12 text-[10px] font-bold uppercase tracking-[0.2em] text-brand-navy/40 lg:flex-row">
             <p>{t.footerCopyright}</p>
-            <div className="flex gap-8">
+            <div className="flex flex-wrap items-center gap-6 sm:gap-8">
               <button onClick={() => handleNavAnchor("about")} className="hover:text-brand-navy cursor-pointer">{t.footerAbout}</button>
               <button onClick={() => handleNavAnchor("destinations")} className="hover:text-brand-navy cursor-pointer">{t.footerDestinations}</button>
               <button onClick={() => handleNavAnchor("contact")} className="hover:text-brand-navy cursor-pointer">{t.footerContact}</button>
+              <button
+                onClick={() => setSeasonalModalOpen(true)}
+                className="inline-flex items-center gap-1.5 text-brand-gold hover:text-brand-navy transition-colors cursor-pointer"
+                title="View seasonal logos schedule & preview"
+              >
+                <Sparkles className="size-3 text-brand-gold" />
+                <span>{isSeasonal ? `${seasonName} Logo` : "Seasonal Logos"}</span>
+              </button>
             </div>
           </div>
 
@@ -271,6 +292,17 @@ export default function App() {
           </div>
         </div>
       </footer>
+
+      {/* Seasonal Logos Manager Modal */}
+      <SeasonalLogoModal
+        isOpen={seasonalModalOpen}
+        onClose={() => setSeasonalModalOpen(false)}
+        activeSeasonId={seasonId}
+        seasonName={seasonName}
+        isSeasonal={isSeasonal}
+        override={override}
+        onSelectOverride={setManualOverride}
+      />
 
       {/* Back to top smooth trigger button */}
       <AnimatePresence>

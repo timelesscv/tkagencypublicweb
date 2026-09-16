@@ -7,11 +7,13 @@ interface PartnerFormProps {
   language: Language;
   onNavigate: (page: "home" | "partner" | "apply") => void;
   onLanguageChange?: (lang: Language) => void;
+  logoSrc?: string;
 }
 
-export default function PartnerForm({ language, onNavigate, onLanguageChange }: PartnerFormProps) {
+export default function PartnerForm({ language, onNavigate, onLanguageChange, logoSrc }: PartnerFormProps) {
   const t = translations[language] || translations.en;
   const isRtl = language === "ar";
+  const displayLogo = logoSrc || logo;
 
   const handleGoHome = () => {
     onNavigate("home");
@@ -23,7 +25,7 @@ export default function PartnerForm({ language, onNavigate, onLanguageChange }: 
       <nav className="sticky top-0 z-50 w-full border-b border-brand-border bg-brand-cream/85 backdrop-blur-md">
         <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6 lg:px-12">
           <button onClick={handleGoHome} className="flex items-center gap-2.5 cursor-pointer text-left">
-            <img src={logo} alt="TK Agency logo" className="size-9 object-contain" />
+            <img src={displayLogo} alt="TK Agency logo" className="size-9 object-contain" />
             <span 
               className="font-display text-xl tracking-tight font-bold bg-gradient-to-r from-[#012756] to-[#063160] bg-clip-text text-transparent inline-block"
               style={{
